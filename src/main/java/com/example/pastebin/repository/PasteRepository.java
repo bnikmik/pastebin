@@ -3,7 +3,6 @@ package com.example.pastebin.repository;
 import com.example.pastebin.enums.Access;
 import com.example.pastebin.model.Paste;
 import com.example.pastebin.repository.projection.PasteProjection;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -20,9 +19,6 @@ public interface PasteRepository extends JpaRepository<Paste, Long>, JpaSpecific
             "ORDER BY created_date DESC\n" +
             "limit 10", nativeQuery = true)
     List<PasteProjection> getLast10Pastes();
-
-    @Override
-    List<Paste> findAll(Specification<Paste> spec);
 
     void deleteAllByExpiredDateIsBefore(Instant now);
 
