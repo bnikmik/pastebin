@@ -2,9 +2,11 @@ package com.example.pastebin.controller;
 
 import com.example.pastebin.enums.Access;
 import com.example.pastebin.enums.TimeRange;
+import com.example.pastebin.model.Paste;
 import com.example.pastebin.repository.PasteRepository;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -14,6 +16,9 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.testcontainers.junit.jupiter.Testcontainers;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -32,12 +37,26 @@ class PasteControllerTest {
     PasteRepository pasteRepository;
     private JSONObject jsonObject;
 
+    private Paste paste ;
+
     private JSONObject getJson() throws JSONException {
         jsonObject = new JSONObject();
         jsonObject.put("name", "имя");
         jsonObject.put("text", "текст");
         return jsonObject;
     }
+
+    @BeforeEach
+    void setUp() {
+        paste = new Paste();
+        paste.setName("имя");
+        paste.setText("текст");
+        paste.setExpiredDate(Instant.now().plus(55, ChronoUnit.MINUTES));
+        paste.setCreatedDate(Instant.now());
+        paste.setAccess(Access.PUBLIC);
+        pasteRepository.save(paste);
+    }
+
 
     @Test
     void addPaste() throws Exception {
@@ -48,11 +67,12 @@ class PasteControllerTest {
                         .content(getJson().toString())).andExpect(status().isOk())
                 .andExpect(jsonPath("$").isString()).andReturn();
 
+
         mockMvc.perform(get("/get-last10"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].name").value(getJson().get("name")))
-                .andExpect(jsonPath("$[0].text").value(getJson().get("text")));
+                .andExpect(jsonPath("$[1].name").value(getJson().get("name")))
+                .andExpect(jsonPath("$[1].text").value(getJson().get("text")));
     }
 
     @Test
@@ -63,13 +83,24 @@ class PasteControllerTest {
     }
 
     @Test
-    void getPasteByNameOrText() {
-        mockMvc.perform(get("/api/faculty/students?facultyId=" + faculty.getId()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray());
+    void getPasteByNameOrText() throws Exception {
+        mockMvc.perform(get("/get-paste?name=" + paste.getName()))
+                .andExpect(status().isOk());
     }
 
     @Test
-    void getPasteByLink() {
+    void getPasteByLink() throws Exception{
+        MvcResult mvcResult = mockMvc.perform(post("/add")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("timeRange", TimeRange.ONE_DAY.toString())
+                        .param("access", Access.PUBLIC.toString())
+                        .content(getJson().toString())).andExpect(status().isOk())
+                .andExpect(jsonPath("$").isString()).andReturn();
+
+        String mvcres = mvcResult.getResponse().getContentAsString().replaceAll("http://localhost/","");
+
+        mockMvc.perform(get("/" + mvcres))
+                .andExpect(status().isOk());
+
     }
 }
