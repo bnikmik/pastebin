@@ -1,5 +1,6 @@
 package com.example.pastebin.repository;
 
+import com.example.pastebin.enums.Access;
 import com.example.pastebin.model.Paste;
 import com.example.pastebin.repository.projection.PasteProjection;
 import org.springframework.data.jpa.domain.Specification;
@@ -25,4 +26,5 @@ public interface PasteRepository extends JpaRepository<Paste, Long>, JpaSpecific
 
     void deleteAllByExpiredDateIsBefore(Instant now);
 
+    List<Paste> findAllByNameOrTextAndAccess(String name, String text, Access access);
 }

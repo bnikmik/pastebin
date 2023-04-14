@@ -7,7 +7,6 @@ import com.example.pastebin.exception.BadParamException;
 import com.example.pastebin.exception.NotFoundException;
 import com.example.pastebin.model.Paste;
 import com.example.pastebin.repository.PasteRepository;
-import com.example.pastebin.repository.specification.PasteSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,8 +51,10 @@ public class PasteService {
 
     public List<PasteDTO> getPasteByNameOrText(String name, String text) {
         if ((name == null || name.isBlank()) && (text == null || text.isBlank())) throw new BadParamException();
-        return pasteRepository.findAll(PasteSpecification.byName(name)
-                .and(PasteSpecification.byText(text))).stream().map(PasteDTO::fromModel).collect(Collectors.toList());
+        return pasteRepository.findAllByNameOrTextAndAccess(name, text,Access.PUBLIC)
+                .stream()
+                .map(PasteDTO::fromModel)
+                .collect(Collectors.toList());
     }
 
     public PasteDTO getPasteByLink(String hash) {

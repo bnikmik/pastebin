@@ -1,6 +1,7 @@
 package com.example.pastebin.service;
 
 import com.example.pastebin.dto.PasteDTO;
+import com.example.pastebin.enums.Access;
 import com.example.pastebin.exception.BadParamException;
 import com.example.pastebin.model.Paste;
 import com.example.pastebin.repository.PasteRepository;
@@ -11,7 +12,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,10 +100,10 @@ class PasteServiceTest {
     public void getPasteByNameOrText() {
         List<Paste> pasteList = new ArrayList<>();
         pasteList.add(paste);
-        when(pasteRepository.findAll(any(Specification.class))).thenReturn(pasteList);
-        List<PasteDTO> pasteDTOList = pasteService.getPasteByNameOrText("Test", "test");
+        when(pasteRepository.findAllByNameOrTextAndAccess(paste.getName(),paste.getText(), Access.PUBLIC)).thenReturn(pasteList);
+        List<PasteDTO> pasteDTOList = pasteService.getPasteByNameOrText("name", "text");
         assertEquals(1, pasteDTOList.size());
-        verify(pasteRepository).findAll(any(Specification.class));
+        verify(pasteRepository).findAllByNameOrTextAndAccess(paste.getName(),paste.getText(), Access.PUBLIC);
     }
 
     @Test
