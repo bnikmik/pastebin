@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("pastebin")
 public class PasteController {
     private PasteService pasteService;
 
@@ -35,7 +34,7 @@ public class PasteController {
         return ResponseEntity.ok(pasteService.getPasteByNameOrText(name, text));
     }
 
-    @GetMapping("/get/{hash}")
+    @GetMapping("/{hash}")
     public ResponseEntity<?> getPasteByLink(@PathVariable String hash) {
         return ResponseEntity.ok(pasteService.getPasteByLink(hash));
     }

@@ -20,6 +20,7 @@ public interface PasteRepository extends JpaRepository<Paste, Long>, JpaSpecific
             "limit 10", nativeQuery = true)
     List<PasteProjection> getLast10Pastes();
 
+    @Override
     List<Paste> findAll(Specification<Paste> spec);
 
     void deleteAllByExpiredDateIsBefore(Instant now);

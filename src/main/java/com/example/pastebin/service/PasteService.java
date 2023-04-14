@@ -33,7 +33,7 @@ public class PasteService {
             paste.setExpiredDate(Instant.now().plus(timeRange.getTime(), ChronoUnit.MINUTES));
         else paste.setExpiredDate(null);
         pasteRepository.save(paste);
-        return encode(paste.getId().toString());
+        return encode(paste.getId().toString() + " " + paste.getName().trim());
     }
 
     public List<PasteDTO> getLast10Pastes() {
@@ -45,7 +45,9 @@ public class PasteService {
     }
 
     private String decode(String string) {
-        return new String(java.util.Base64.getDecoder().decode(string));
+        String tmp = new String(java.util.Base64.getDecoder().decode(string));
+        String [] arr = tmp.split(" ", 2);
+        return arr[0];
     }
 
     public List<PasteDTO> getPasteByNameOrText(String name, String text) {
@@ -59,7 +61,7 @@ public class PasteService {
         try {
             tmp = Long.parseLong(decode(hash));
         } catch (IllegalArgumentException e) {
-            throw new NotFoundException();
+            throw new BadParamException();
         }
         return PasteDTO.fromModel(pasteRepository.findById(tmp).orElseThrow(NotFoundException::new));
     }
