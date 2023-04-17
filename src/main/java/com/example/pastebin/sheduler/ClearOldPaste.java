@@ -5,8 +5,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-
 @Component
 public class ClearOldPaste {
     private final PasteRepository pasteRepository;
@@ -15,9 +13,9 @@ public class ClearOldPaste {
         this.pasteRepository = pasteRepository;
     }
 
-    @Scheduled(cron = "0 * * ? * *")
+    @Scheduled(cron = "0 0 0 * * ?")
     @Transactional
     public void clearTokens() {
-        pasteRepository.deleteAllByExpiredDateIsBefore(Instant.now());
+        pasteRepository.delete();
     }
 }

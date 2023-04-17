@@ -1,8 +1,6 @@
 package com.example.pastebin.controller;
 
-import com.example.pastebin.dto.PasteDTO;
-import com.example.pastebin.enums.Access;
-import com.example.pastebin.enums.TimeRange;
+import com.example.pastebin.dto.CreatedPasteDTO;
 import com.example.pastebin.service.PasteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -11,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class PasteController {
-    private PasteService pasteService;
+    private final PasteService pasteService;
 
     @Autowired
     public PasteController(PasteService pasteService) {
@@ -19,8 +17,8 @@ public class PasteController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> addPaste(@RequestBody PasteDTO pasteDTO, @RequestParam TimeRange timeRange, Access access) {
-        return ResponseEntity.ok(WebMvcLinkBuilder.linkTo(PasteController.class).slash(pasteService.addPaste(pasteDTO, timeRange, access)).withSelfRel().getHref());
+    public ResponseEntity<?> addPaste(@RequestBody CreatedPasteDTO pasteDTO) {
+        return ResponseEntity.ok(WebMvcLinkBuilder.linkTo(PasteController.class).slash(pasteService.addPaste(pasteDTO)).withSelfRel().getHref());
     }
 
     @GetMapping("/get-last10")

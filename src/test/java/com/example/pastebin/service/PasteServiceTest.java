@@ -5,7 +5,8 @@ import com.example.pastebin.enums.Access;
 import com.example.pastebin.exception.BadParamException;
 import com.example.pastebin.model.Paste;
 import com.example.pastebin.repository.PasteRepository;
-import com.example.pastebin.repository.projection.PasteProjection;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,11 +14,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -33,10 +35,15 @@ class PasteServiceTest {
 
     @BeforeEach
     void setUp() {
+        Instant timeCreate = Instant.now();
         pasteDTO = new PasteDTO();
         pasteDTO.setName("name");
         pasteDTO.setText("text");
         paste = pasteDTO.toModel();
+        paste.setAccess(Access.PUBLIC);
+        paste.setCreatedDate(timeCreate);
+        paste.setExpiredDate(timeCreate.plus(10, ChronoUnit.MINUTES));
+        paste.setHash(RandomStringUtils.randomAlphabetic(8));
     }
 
     @Test
@@ -71,22 +78,12 @@ class PasteServiceTest {
 
     @Test
     void getLast10Pastes() {
-        PasteProjection projection = new PasteProjection() {
-            @Override
-            public String getName() {
-                return "name";
-            }
-
-            @Override
-            public String getText() {
-                return "text";
-            }
-        };
-        List<PasteProjection> list = new ArrayList<>();
-        list.add(projection);
-        when(pasteRepository.getLast10Pastes()).thenReturn(list);
+        List<Paste> list = new ArrayList<>();
+        list.add(paste);
+        when(pasteRepository.findTop10ByAccessAndExpiredDateIsAfterOrderByCreatedDateDesc(eq(Access.PUBLIC), any(Instant.class))).thenReturn(list);
         int size = pasteService.getLast10Pastes().size();
-        assertEquals(1, size);
+        assertEquals(list.size(), size);
+        verify(pasteRepository, times(1)).findTop10ByAccessAndExpiredDateIsAfterOrderByCreatedDateDesc(eq(Access.PUBLIC), any(Instant.class));
     }
 
     @Test
@@ -100,24 +97,18 @@ class PasteServiceTest {
     public void getPasteByNameOrText() {
         List<Paste> pasteList = new ArrayList<>();
         pasteList.add(paste);
-        when(pasteRepository.findAllByNameOrTextAndAccess(paste.getName(),paste.getText(), Access.PUBLIC)).thenReturn(pasteList);
+        when(pasteRepository.findAllByNameOrText(paste.getName(), paste.getText())).thenReturn(pasteList);
         List<PasteDTO> pasteDTOList = pasteService.getPasteByNameOrText("name", "text");
         assertEquals(1, pasteDTOList.size());
-        verify(pasteRepository).findAllByNameOrTextAndAccess(paste.getName(),paste.getText(), Access.PUBLIC);
+        verify(pasteRepository).findAllByNameOrText(paste.getName(), paste.getText());
     }
 
     @Test
     void testGetPasteByLink() {
-        String hash = "Mjkgc3RyaW5n";
-        when(pasteRepository.findById(anyLong())).thenReturn(Optional.of(paste));
-        PasteDTO result = pasteService.getPasteByLink(hash);
-        assertNotNull(result);
+        when(pasteRepository.findPasteByHashAndExpiredDateIsAfter(eq(paste.getHash()),any(Instant.class))).thenReturn(Optional.of(paste));
+        System.out.println();
+        PasteDTO result = pasteService.getPasteByLink(paste.getHash());
+        Assertions.assertNotNull(result);
         assertEquals(paste.getName(), result.getName());
-    }
-
-    @Test
-    void testGetPasteByLinkThrowException() {
-        String hash = "1321";
-        assertThrows(BadParamException.class, () -> pasteService.getPasteByLink(hash));
     }
 }

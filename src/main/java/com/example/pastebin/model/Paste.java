@@ -16,6 +16,7 @@ public class Paste {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    private String hash;
     @Lob
     @Type(type = "org.hibernate.type.TextType")
     private String text;
