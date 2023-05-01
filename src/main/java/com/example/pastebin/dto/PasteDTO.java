@@ -1,6 +1,6 @@
 package com.example.pastebin.dto;
 
-import com.example.pastebin.exception.BadParamException;
+import com.example.pastebin.exception.ForbiddenException;
 import com.example.pastebin.model.Paste;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,9 +13,9 @@ public class PasteDTO {
 
     public Paste toModel() {
         Paste paste = new Paste();
-        if (name == null || name.isBlank()) throw new BadParamException();
+        if (name == null || name.isBlank()) throw new ForbiddenException();
         else paste.setName(name);
-        if (text == null || text.isBlank()) throw new BadParamException();
+        if (text == null || text.isBlank()) throw new ForbiddenException();
         else paste.setText(text);
         return paste;
     }

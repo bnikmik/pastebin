@@ -4,7 +4,7 @@ import com.example.pastebin.dto.CreatedPasteDTO;
 import com.example.pastebin.dto.PasteDTO;
 import com.example.pastebin.enums.Access;
 import com.example.pastebin.enums.TimeRange;
-import com.example.pastebin.exception.BadParamException;
+import com.example.pastebin.exception.ForbiddenException;
 import com.example.pastebin.exception.NotFoundException;
 import com.example.pastebin.model.Paste;
 import com.example.pastebin.repository.PasteRepository;
@@ -41,7 +41,7 @@ public class PasteService {
     }
 
     public List<PasteDTO> getPasteByNameOrText(String name, String text) {
-        if ((name == null || name.isBlank()) && (text == null || text.isBlank())) throw new BadParamException();
+        if ((name == null || name.isBlank()) && (text == null || text.isBlank())) throw new ForbiddenException();
         return pasteRepository.findAllByNameOrText(name, text)
                 .stream()
                 .map(PasteDTO::fromModel)

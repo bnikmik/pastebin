@@ -2,7 +2,7 @@ package com.example.pastebin.service;
 
 import com.example.pastebin.dto.PasteDTO;
 import com.example.pastebin.enums.Access;
-import com.example.pastebin.exception.BadParamException;
+import com.example.pastebin.exception.ForbiddenException;
 import com.example.pastebin.model.Paste;
 import com.example.pastebin.repository.PasteRepository;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -55,25 +55,25 @@ class PasteServiceTest {
     @Test
     void testMappingDtoWhenNameNull() {
         pasteDTO.setName(null);
-        assertThrows(BadParamException.class, () -> pasteDTO.toModel());
+        assertThrows(ForbiddenException.class, () -> pasteDTO.toModel());
     }
 
     @Test
     void testMappingDtoWhenTextNull() {
         pasteDTO.setText(null);
-        assertThrows(BadParamException.class, () -> pasteDTO.toModel());
+        assertThrows(ForbiddenException.class, () -> pasteDTO.toModel());
     }
 
     @Test
     void testMappingDtoWhenNameIsBlank() {
         pasteDTO.setName(" ");
-        assertThrows(BadParamException.class, () -> pasteDTO.toModel());
+        assertThrows(ForbiddenException.class, () -> pasteDTO.toModel());
     }
 
     @Test
     void testMappingDtoWhenTextIsBlank() {
         pasteDTO.setText(" ");
-        assertThrows(BadParamException.class, () -> pasteDTO.toModel());
+        assertThrows(ForbiddenException.class, () -> pasteDTO.toModel());
     }
 
     @Test
@@ -88,8 +88,8 @@ class PasteServiceTest {
 
     @Test
     public void getPasteByNameOrText_throwsBadParamException_whenNameAndTextAreNull() {
-        assertThrows(BadParamException.class, () -> pasteService.getPasteByNameOrText(null, null));
-        assertThrows(BadParamException.class, () -> pasteService.getPasteByNameOrText("", ""));
+        assertThrows(ForbiddenException.class, () -> pasteService.getPasteByNameOrText(null, null));
+        assertThrows(ForbiddenException.class, () -> pasteService.getPasteByNameOrText("", ""));
     }
 
 

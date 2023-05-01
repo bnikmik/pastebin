@@ -48,14 +48,14 @@ class PasteControllerTest {
         pasteRepository.save(paste);
     }
 
-    private JSONObject getJson() throws JSONException {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("name", "имя");
-        jsonObject.put("text", "текст");
-        jsonObject.put("timeRange", TimeRange.ONE_DAY.toString());
-        jsonObject.put("access", Access.PUBLIC.toString());
-        return jsonObject;
-    }
+        private JSONObject getJson() throws JSONException {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("name", "имя");
+            jsonObject.put("text", "текст");
+            jsonObject.put("timeRange", TimeRange.ONE_DAY.toString());
+            jsonObject.put("access", Access.PUBLIC.toString());
+            return jsonObject;
+        }
 
 
     @Test
@@ -83,7 +83,10 @@ class PasteControllerTest {
     @Test
     void getPasteByNameOrText() throws Exception {
         mockMvc.perform(get("/get-paste?name=" + paste.getName()))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
+//                .andExpect(jsonPath("$[1].name").value(paste.getName()))
+//                .andExpect(jsonPath("$[1].text").value(paste.getText()));
     }
 
     @Test

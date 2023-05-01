@@ -4,11 +4,14 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
-public class DockerConfig {
+@Testcontainers
+public class TestConfig {
     @Container
     private final static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:13")
-            .withUsername("postgres")
+            .withDatabaseName("test_db")
+            .withUsername("test")
             .withPassword("123");
 
     @DynamicPropertySource
