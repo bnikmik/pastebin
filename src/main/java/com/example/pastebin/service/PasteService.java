@@ -37,7 +37,7 @@ public class PasteService {
     }
 
     public List<PasteDTO> getLast10Pastes() {
-        return pasteRepository.findTop10ByAccessAndExpiredDateIsAfterOrderByCreatedDateDesc(Access.PUBLIC,Instant.now()).stream().map(PasteDTO::fromModel).collect(Collectors.toList());
+        return pasteRepository.findTop10ByAccessAndExpiredDateIsAfterOrderByCreatedDateDesc(Access.PUBLIC, Instant.now()).stream().map(PasteDTO::fromModel).collect(Collectors.toList());
     }
 
     public List<PasteDTO> getPasteByNameOrText(String name, String text) {
@@ -49,6 +49,6 @@ public class PasteService {
     }
 
     public PasteDTO getPasteByLink(String hash) {
-        return PasteDTO.fromModel(pasteRepository.findPasteByHashAndExpiredDateIsAfter(hash,Instant.now()).orElseThrow(NotFoundException::new));
+        return PasteDTO.fromModel(pasteRepository.findPasteByHashAndExpiredDateIsAfter(hash, Instant.now()).orElseThrow(NotFoundException::new));
     }
 }

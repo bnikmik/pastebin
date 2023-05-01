@@ -28,7 +28,7 @@ public class PasteController {
 
     @GetMapping("/get-paste")
     public ResponseEntity<?> getPasteByNameOrText(@RequestParam(required = false) String name,
-                                      @RequestParam(required = false) String text) {
+                                                  @RequestParam(required = false) String text) {
         return ResponseEntity.ok(pasteService.getPasteByNameOrText(name, text));
     }
 

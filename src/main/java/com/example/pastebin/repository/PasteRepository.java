@@ -26,5 +26,5 @@ public interface PasteRepository extends JpaRepository<Paste, Long> {
     @Query("SELECT p FROM Paste p\n" +
             "where p.access = 'PUBLIC' and p.expiredDate > now() \n " +
             "and (p.name = ?1 or p.text = ?2)")
-    List<Paste> findAllByNameOrText(String name,String text);
+    List<Paste> findAllByNameOrText(String name, String text);
 }
